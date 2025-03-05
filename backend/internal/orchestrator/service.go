@@ -10,6 +10,8 @@ import (
 	"strconv"
 )
 
+var ErrIDTaskNotExists = errors.New("task with this ID does not exist")
+
 var tasksQueue = make(chan *models.TaskResponse, 1024)
 var allTasks = make(map[uint32]*models.Task)
 var taskArgs = make(map[uint32]*models.Argument)
@@ -149,7 +151,7 @@ func (s *APIService) ConfirmTask(taskID uint32, result float64) error {
 		}
 		return nil
 	}
-	return errors.New("task with this ID does not exist")
+	return ErrIDTaskNotExists
 }
 
 // 5 | 38

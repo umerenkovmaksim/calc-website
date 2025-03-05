@@ -5,7 +5,9 @@ import (
 	"calc-website/config"
 	"calc-website/internal/models"
 	"calc-website/internal/orchestrator"
+	"calc-website/pkg/utils"
 	"encoding/json"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -46,12 +48,15 @@ func TestCalculateExpression(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer resp.Body.Close()
+	defer utils.CloseResponseBody(resp.Body)
 
 	checkStatusCode(t, resp, http.StatusCreated)
 
 	var responseMap map[string]interface{}
-	json.NewDecoder(resp.Body).Decode(&responseMap)
+	err = json.NewDecoder(resp.Body).Decode(&responseMap)
+	if err != nil {
+		log.Printf("decode task error: %v", err.Error())
+	}
 
 	if _, ok := responseMap["expression"]; !ok {
 		t.Error("Ответ не содержит id выражения")
@@ -68,12 +73,15 @@ func TestGetExpressions(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer resp.Body.Close()
+	defer utils.CloseResponseBody(resp.Body)
 
 	checkStatusCode(t, resp, http.StatusOK)
 
 	var responseMap map[string]interface{}
-	json.NewDecoder(resp.Body).Decode(&responseMap)
+	err = json.NewDecoder(resp.Body).Decode(&responseMap)
+	if err != nil {
+		log.Printf("decode task error: %v", err.Error())
+	}
 
 	if _, ok := responseMap["expressions"]; !ok {
 		t.Error("Ответ не содержит списка выражений")
@@ -93,7 +101,7 @@ func TestGetExpressionByID(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer resp.Body.Close()
+	defer utils.CloseResponseBody(resp.Body)
 
 	checkStatusCode(t, resp, http.StatusCreated)
 
@@ -118,7 +126,7 @@ func TestGetExpressionByID(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer resp.Body.Close()
+	defer utils.CloseResponseBody(resp.Body)
 
 	checkStatusCode(t, resp, http.StatusOK)
 
@@ -146,7 +154,7 @@ func TestGetTask(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer resp.Body.Close()
+	defer utils.CloseResponseBody(resp.Body)
 
 	checkStatusCode(t, resp, http.StatusCreated)
 
@@ -155,12 +163,15 @@ func TestGetTask(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer resp.Body.Close()
+	defer utils.CloseResponseBody(resp.Body)
 
 	checkStatusCode(t, resp, http.StatusOK)
 
 	var task map[string]interface{}
-	json.NewDecoder(resp.Body).Decode(&task)
+	err = json.NewDecoder(resp.Body).Decode(&task)
+	if err != nil {
+		log.Printf("decode task error: %v", err.Error())
+	}
 
 	if _, ok := task["id"]; !ok {
 		t.Error("Ответ не содержит id задачи")
@@ -179,7 +190,7 @@ func TestPostTaskResult(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer resp.Body.Close()
+	defer utils.CloseResponseBody(resp.Body)
 
 	checkStatusCode(t, resp, http.StatusCreated)
 
@@ -188,12 +199,15 @@ func TestPostTaskResult(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer resp.Body.Close()
+	defer utils.CloseResponseBody(resp.Body)
 
 	checkStatusCode(t, resp, http.StatusOK)
 
 	var task map[string]interface{}
-	json.NewDecoder(resp.Body).Decode(&task)
+	err = json.NewDecoder(resp.Body).Decode(&task)
+	if err != nil {
+		log.Printf("decode task error: %v", err.Error())
+	}
 
 	resultData := map[string]interface{}{
 		"id":     task["id"],
@@ -207,7 +221,6 @@ func TestPostTaskResult(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer resp.Body.Close()
 
 	checkStatusCode(t, resp, http.StatusOK)
 }

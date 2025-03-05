@@ -19,7 +19,7 @@ export default function Home() {
 
   useEffect(() => {
     fetchExpressions();
-    const interval = setInterval(fetchExpressions, 5000);
+    const interval = setInterval(fetchExpressions, 1000);
     return () => clearInterval(interval);
   }, []);
 

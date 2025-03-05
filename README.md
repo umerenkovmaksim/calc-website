@@ -1,9 +1,33 @@
 # Распределённый вычислитель арифметических выражений
 
-Данный проект является распределённым вычислителем арифметических выражений на языке Go. Особенность системы в том, что каждая арифметическая операция (сложение, вычитание, умножение, деление) выполняется "очень-очень" долго, что требует распределения вычислительных задач между отдельными компонентами.
+Данный проект представляет собой распределённый вычислитель арифметических выражений на языке Go. Особенность системы в том, что каждая арифметическая операция (сложение, вычитание, умножение, деление) выполняется "очень-очень" долго, что требует распределения вычислительных задач между отдельными компонентами.
 
 ---
+## Использование
 
+Для использования проекта можно использовать API, которое после запуска проекта будет находиться на http://localhost:8080, либо использовать графическую оболочку, которая находится на http://localhost:3000
+
+- **Отправка выражения на вычисление:**
+
+    ```bash
+    curl --location 'localhost:8080/api/v1/calculate' \
+    --header 'Content-Type: application/json' \
+    --data '{"expression": "2 + 2 * 2"}'
+    ```
+
+
+- **Получение статуса и результата вычисления:**
+
+    ```bash
+    curl --location 'localhost:8080/api/v1/expressions'
+    ```
+
+  или по конкретному идентификатору:
+
+    ```bash
+    curl --location 'localhost:8080/api/v1/expressions/<id>'
+    ```
+---
 ## Установка и запуск
 
 ### Требования
@@ -56,7 +80,7 @@ docker compose up --build
 **Запрос:**
 
 ```bash
-curl --location 'localhost/api/v1/calculate' \
+curl --location 'localhost:8080/api/v1/calculate' \
 --header 'Content-Type: application/json' \
 --data '{
   "expression": "<строка с выражением>"
@@ -72,7 +96,7 @@ curl --location 'localhost/api/v1/calculate' \
 
 ```json
 {
-  "id": <уникальный идентификатор выражения>
+  "id": "<уникальный идентификатор выражения>"
 }
 ```
 ---
@@ -82,7 +106,7 @@ curl --location 'localhost/api/v1/calculate' \
 **Запрос:**
 
 ```bash
-curl --location 'localhost/api/v1/expressions'
+curl --location 'localhost:8080/api/v1/expressions'
 ```
 **Ответ:**
 
@@ -93,9 +117,9 @@ curl --location 'localhost/api/v1/expressions'
 {
   "expressions": [
     {       
-      "id": <идентификатор выражения>,       
-      "status": <статус вычисления>,       
-      "result": <результат выражения>     
+      "id": "<идентификатор выражения>",       
+      "status": "<статус вычисления>",       
+      "result": 0     
     }
   ]
 }
@@ -108,7 +132,7 @@ curl --location 'localhost/api/v1/expressions'
 **Запрос:**
 
 ```bash
-curl --location 'localhost/api/v1/expressions/:id'
+curl --location 'localhost:8080/api/v1/expressions/:id'
 ```
 **Ответ:**
 
@@ -119,9 +143,9 @@ curl --location 'localhost/api/v1/expressions/:id'
 ```json
 {
   "expression": {
-    "id": <идентификатор выражения>,     
-    "status": <статус вычисления>,     
-    "result": <результат выражения>
+    "id": "<идентификатор выражения>",     
+    "status": "<статус вычисления>",     
+    "result": 0
   }
 }
 ```
@@ -133,7 +157,7 @@ curl --location 'localhost/api/v1/expressions/:id'
 **Запрос:**
 
 ```bash
-curl --location 'localhost/internal/task'
+curl --location 'localhost:8080/internal/task'
 ```
 **Ответ:**
 
@@ -144,11 +168,11 @@ curl --location 'localhost/internal/task'
 ```json
 {
   "task": {
-    "id": <идентификатор задачи>,     
-    "arg1": <значение первого аргумента>,     
-    "arg2": <значение второго аргумента>,     
-    "operation": <операция (например, +, -, *, /)>,     
-    "operation_time": <время выполнения операции в мс>
+    "id": "<идентификатор задачи>",     
+    "arg1": 0,     
+    "arg2": 0,     
+    "operation": "<операция (+, -, *, /)>",     
+    "operation_time": 0
   }
 }
 ```
@@ -160,7 +184,7 @@ curl --location 'localhost/internal/task'
 **Запрос:**
 
 ```bash
-curl --location 'localhost/internal/task' \
+curl --location 'localhost:8080/internal/task' \
 --header 'Content-Type: application/json' \
 --data '{
   "id": <идентификатор задачи>,   
@@ -198,6 +222,7 @@ curl --location 'localhost/internal/task' \
 - **TIME_DIVISIONS_MS** — время выполнения операции деления (в мс).
 - **COMPUTING_POWER** — количество горутин, запускаемых агентом для параллельных вычислений.
 
+
 Пример настройки переменных:
 
 ```bash
@@ -208,27 +233,3 @@ export TIME_DIVISIONS_MS=1500
 export COMPUTING_POWER=4
 ```
 ---
-
-## Использование
-
-- **Отправка выражения на вычисление:**
-
-    ```bash
-    curl --location 'localhost/api/v1/calculate' \
-    --header 'Content-Type: application/json' \
-    --data '{"expression": "2 + 2 * 2"}'
-    ```
-
-
-- **Получение статуса и результата вычисления:**
-
-    ```bash
-    curl --location 'localhost/api/v1/expressions'
-    ```
-
-  или по конкретному идентификатору:
-
-    ```bash
-    curl --location 'localhost/api/v1/expressions/<id>'
-    ```
-    

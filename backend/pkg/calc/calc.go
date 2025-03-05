@@ -1,8 +1,8 @@
 package calc
 
 import (
+	"calc-website/pkg/utils"
 	"errors"
-	"strconv"
 	"unicode"
 )
 
@@ -23,26 +23,6 @@ var OperationPriorities = map[string]int{
 	"/": 1,
 	"-": 2,
 	"+": 2,
-}
-
-func Pop[T any](array *[]T) (T, error) {
-	if len(*array) == 0 {
-		var zeroVar T
-		return zeroVar, ErrExpressionInvalid
-	}
-
-	elem := (*array)[len(*array)-1]
-	*array = (*array)[:len(*array)-1]
-
-	return elem, nil
-}
-
-func IsNumber(line string) bool {
-	_, err := strconv.ParseFloat(line, 10)
-	if err != nil {
-		return false
-	}
-	return true
 }
 
 func Compute(a, b float64, operator string) (float64, error) {
@@ -124,17 +104,17 @@ func ToTree(expression string) (Node, error) {
 				operators[len(operators)-1] != "(" &&
 				OperationPriorities[operators[len(operators)-1]] <= priority {
 
-				op, err := Pop(&operators)
+				op, err := utils.Pop(&operators)
 				if err != nil {
 					return Node{}, err
 				}
 
-				right, err := Pop(&operands)
+				right, err := utils.Pop(&operands)
 				if err != nil {
 					return Node{}, err
 				}
 
-				left, err := Pop(&operands)
+				left, err := utils.Pop(&operands)
 				if err != nil {
 					return Node{}, err
 				}
@@ -144,7 +124,7 @@ func ToTree(expression string) (Node, error) {
 				operands = append(operands, *node)
 			}
 			operators = append(operators, token)
-		} else if IsNumber(token) {
+		} else if utils.IsNumber(token) {
 			operands = append(operands, Node{Value: token})
 		} else if token == "(" {
 			operators = append(operators, token)
@@ -152,17 +132,17 @@ func ToTree(expression string) (Node, error) {
 			for len(operators) > 0 &&
 				operators[len(operators)-1] != "(" {
 
-				op, err := Pop(&operators)
+				op, err := utils.Pop(&operators)
 				if err != nil {
 					return Node{}, err
 				}
 
-				right, err := Pop(&operands)
+				right, err := utils.Pop(&operands)
 				if err != nil {
 					return Node{}, err
 				}
 
-				left, err := Pop(&operands)
+				left, err := utils.Pop(&operands)
 				if err != nil {
 					return Node{}, err
 				}
@@ -172,7 +152,7 @@ func ToTree(expression string) (Node, error) {
 				operands = append(operands, *node)
 			}
 
-			_, err := Pop(&operators)
+			_, err := utils.Pop(&operators)
 
 			if err != nil {
 				return Node{}, err
@@ -181,15 +161,15 @@ func ToTree(expression string) (Node, error) {
 	}
 
 	for len(operators) > 0 {
-		op, err := Pop(&operators)
+		op, err := utils.Pop(&operators)
 		if err != nil {
 			return Node{}, err
 		}
-		right, err := Pop(&operands)
+		right, err := utils.Pop(&operands)
 		if err != nil {
 			return Node{}, err
 		}
-		left, err := Pop(&operands)
+		left, err := utils.Pop(&operands)
 		if err != nil {
 			return Node{}, err
 		}

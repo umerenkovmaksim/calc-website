@@ -2,6 +2,7 @@ package orchestrator
 
 import (
 	"calc-website/internal/models"
+	"calc-website/pkg/utils"
 	"encoding/json"
 	"io"
 	"net/http"
@@ -44,7 +45,7 @@ func (h *APIHandler) GetTask(w http.ResponseWriter, r *http.Request) {
 	if task == nil {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusNotFound)
-		err := json.NewEncoder(w).Encode("tasks not found")
+		err := json.NewEncoder(w).Encode(map[string]any{"message": "tasks not found"})
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusNotFound)
 		}
@@ -60,7 +61,7 @@ func (h *APIHandler) GetTask(w http.ResponseWriter, r *http.Request) {
 
 func (h *APIHandler) PostTask(w http.ResponseWriter, r *http.Request) {
 	body, err := io.ReadAll(r.Body)
-	defer r.Body.Close()
+	defer utils.CloseResponseBody(r.Body)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
@@ -80,24 +81,28 @@ func (h *APIHandler) PostTask(w http.ResponseWriter, r *http.Request) {
 
 func (h *APIHandler) Calculate(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
 	body, err := io.ReadAll(r.Body)
-	defer r.Body.Close()
+	defer utils.CloseResponseBody(r.Body)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnprocessableEntity)
+		return
 	}
 
 	var expression models.ExpressionRequest
 	err = json.Unmarshal(body, &expression)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnprocessableEntity)
+		return
 	}
 
 	expressionID, err := h.Service.CreateTasks(expression.Expression)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnprocessableEntity)
+		return
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
@@ -105,11 +110,13 @@ func (h *APIHandler) Calculate(w http.ResponseWriter, r *http.Request) {
 		map[string]any{"expression": models.ExpressionResponse{ExpressionID: strconv.Itoa(int(expressionID))}})
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnprocessableEntity)
+		return
 	}
 }
 
 func (h *APIHandler) GetExpressions(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 		return
 	}
 	expressions := h.Service.GetAllExpressions()
@@ -118,16 +125,19 @@ func (h *APIHandler) GetExpressions(w http.ResponseWriter, r *http.Request) {
 	err := json.NewEncoder(w).Encode(map[string]any{"expressions": expressions})
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 }
 
 func (h *APIHandler) GetExpressionByID(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 		return
 	}
 	id, err := strconv.ParseUint(r.PathValue("id"), 10, 32)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnprocessableEntity)
+		return
 	}
 	expression := h.Service.GetExpressionByID(uint32(id))
 	w.Header().Set("Content-Type", "application/json")
@@ -135,5 +145,6 @@ func (h *APIHandler) GetExpressionByID(w http.ResponseWriter, r *http.Request) {
 	err = json.NewEncoder(w).Encode(map[string]any{"expression": expression})
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 }

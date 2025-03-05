@@ -7,7 +7,7 @@ services:
     networks:
       - calc-network
     environment:
-      - COMPUTING_POWER=5
+      - COMPUTING_POWER=${COMPUTING_POWER}
       - ORCHESTRATOR_URL=http://orchestrator:8080
   orchestrator:
     container_name: calc-orchestrator

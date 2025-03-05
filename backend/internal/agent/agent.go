@@ -5,6 +5,7 @@ import (
 	"calc-website/config"
 	"calc-website/internal/models"
 	"calc-website/pkg/calc"
+	"calc-website/pkg/utils"
 	"encoding/json"
 	"io"
 	"log"
@@ -23,7 +24,7 @@ func ProcessTask(orchestratorUrl string) error {
 	}
 
 	body, err := io.ReadAll(resp.Body)
-	defer resp.Body.Close()
+	defer utils.CloseResponseBody(resp.Body)
 	if err != nil {
 		return err
 	}
