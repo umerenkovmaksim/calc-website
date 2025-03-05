@@ -1,0 +1,45 @@
+# React
+/node_modules/
+/build/
+/dist/
+/*.log
+/.env
+/.env.local
+/.env.*.local
+/.cache
+/.pnp
+.pnp.js
+/coverage
+.vscode/
+.idea/
+
+# Golang
+# Binaries
+*.exe
+*.exe~
+*.out
+*.app
+*.dmg
+*.so
+*.dylib
+*.a
+*.o
+*.obj
+
+# Go workspace files
+go.work
+go.work.sum
+
+# Dependency directories
+/vendor/
+
+# Test coverage
+/coverage/
+
+# IDEs and editor files
+.vscode/
+.idea/
+
+# OS generated files
+.DS_Store
+Thumbs.db

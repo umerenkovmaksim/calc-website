@@ -1,0 +1,35 @@
+services:
+  agent:
+    container_name: calc-agent
+    build:
+      context: backend
+      dockerfile: cmd/agent/Dockerfile
+    networks:
+      - calc-network
+    environment:
+      - COMPUTING_POWER=5
+      - ORCHESTRATOR_URL=http://orchestrator:8080
+  orchestrator:
+    container_name: calc-orchestrator
+    build:
+      context: backend
+      dockerfile: cmd/orchestrator/Dockerfile
+    ports:
+      - "8080:8080"
+    networks:
+      - calc-network
+  web:
+    container_name: calc-web
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    networks:
+      - calc-network
+    environment:
+      - ORCHESTRATOR_URL=http://orchestrator:8080
+
+networks:
+  calc-network:
+    driver: bridge
