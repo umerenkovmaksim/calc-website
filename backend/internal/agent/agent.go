@@ -35,6 +35,9 @@ func ProcessTask(orchestratorUrl string) error {
 		return err
 	}
 	result, err := calc.Compute(task.Arg1, task.Arg2, task.Operation)
+	if err != nil {
+		return err
+	}
 	time.Sleep(time.Duration(task.OperationTime) * time.Millisecond)
 
 	taskResult := models.TaskResult{

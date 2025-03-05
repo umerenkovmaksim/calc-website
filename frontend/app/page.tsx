@@ -142,7 +142,7 @@ export default function Home() {
                   <li key={expr.id} className="bg-gray-100 dark:bg-gray-700 rounded-lg shadow p-4 mb-4 transform transition duration-500 hover:scale-105 animate-fadeIn">
                     <p className="text-gray-800 dark:text-gray-200"><strong>ID:</strong> {expr.id}</p>
                     <p className="text-gray-800 dark:text-gray-200"><strong>Статус:</strong> {expr.status}</p>
-                    <p className="text-gray-800 dark:text-gray-200"><strong>Результат:</strong> {expr.result || "Ожидайте..."}</p>
+                    <p className="text-gray-800 dark:text-gray-200"><strong>Результат:</strong> {expr.status === "confirmed" ? expr.result : "Ожидайте..."}</p>
                   </li>
               );
             })}

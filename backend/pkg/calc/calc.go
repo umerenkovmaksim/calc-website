@@ -57,6 +57,10 @@ func checkExpression(expression string) bool {
 	return true
 }
 
+func hasDivisionByZero(root *Node) bool {
+	return root.Right.Value == "0" && root.Value == "/"
+}
+
 func tokenize(expression string) []string {
 	index := 0
 	expressionLength := len(expression)
@@ -96,6 +100,9 @@ func ToTree(expression string) (Node, error) {
 		return Node{}, ErrExpressionInvalid
 	}
 	tokens := tokenize(expression)
+	if len(tokens) < 3 {
+		return Node{}, ErrExpressionInvalid
+	}
 
 	for _, token := range tokens {
 		priority, op := OperationPriorities[token]
@@ -118,6 +125,7 @@ func ToTree(expression string) (Node, error) {
 				if err != nil {
 					return Node{}, err
 				}
+
 				node := &Node{Value: op}
 				node.Left = &left
 				node.Right = &right
@@ -180,7 +188,13 @@ func ToTree(expression string) (Node, error) {
 	}
 
 	if size := len(operands); size > 0 {
-		return operands[len(operands)-1], nil
+		root := operands[len(operands)-1]
+
+		if hasDivisionByZero(&root) {
+			return Node{}, ErrDivisionByZero
+		}
+
+		return root, nil
 	}
 	return Node{}, nil
 }

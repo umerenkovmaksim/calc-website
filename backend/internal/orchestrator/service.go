@@ -5,7 +5,6 @@ import (
 	"calc-website/internal/models"
 	"calc-website/pkg/calc"
 	"errors"
-	"fmt"
 	"github.com/google/uuid"
 	"strconv"
 )
@@ -90,7 +89,6 @@ func (s *APIService) addTasks(node *calc.Node, parentArgID uint32, expressionID 
 func (s *APIService) CreateTasks(expression string) (uint32, error) {
 	expressionTree, err := calc.ToTree(expression)
 	if err != nil {
-		fmt.Println(err)
 		return 0, err
 	}
 
